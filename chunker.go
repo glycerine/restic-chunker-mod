@@ -205,6 +205,28 @@ func (c *BaseChunker) NextSplitPoint(buf []byte) (int, uint64) {
 
 		add++
 
+		// In https://github.com/restic/chunker/issues/36
+		//
+		// https://github.com/SaveTheRbtz writes:
+		//
+		// "Actually, it is not that simple. On a random
+		//  input it is indeed working fine but if I use
+		//  a skewed input then output chunk sizes are
+		//  heavily skewed towards minSize (regardless of the polynomyal).
+		//
+		//  "If I change (digest&c.splitmask) == 0 to (digest&c.splitmask) == 1
+		//   then chunk size distribution becomes way better.
+		//
+		// Problem also goes away if we match on exact number
+		// of zeroes instead of greater or equal, e.g.:
+		//
+		// bits.TrailingZeros64(digest) == c.averageBits
+		//
+		// But then:
+		// https://github.com/restic/chunker/pull/37/files
+		// has already merged. So is an alternative?
+		// by setting WithAverageBits() ?
+
 		if (digest&c.splitmask) == 0 || add >= maxSize {
 			if add < minSize {
 				continue
