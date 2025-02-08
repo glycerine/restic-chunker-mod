@@ -7,7 +7,7 @@ import (
 	"io"
 	"math/rand"
 
-	"github.com/restic/chunker"
+	"github.com/glycerine/restic-chunker-mod"
 )
 
 func ExampleChunker() {
